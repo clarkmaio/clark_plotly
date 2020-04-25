@@ -30,7 +30,7 @@ def double_plot(df, x, y1, y2, subplot_title = None, **kwargs):
     y: list of lines to plot. It MUST be a list (even for a single plot)
     """
 
-    fig = make_subplots(2, 1, subplot_titles=subplot_title)
+    fig = make_subplots(2, 1, subplot_titles=subplot_title, shared_xaxes=True)
 
     # First plot
     for yy in y1:
@@ -50,4 +50,33 @@ def double_plot(df, x, y1, y2, subplot_title = None, **kwargs):
 
     layout = go.Layout(**kwargs)
     fig.update_layout(layout)
+    return fig
+
+
+def scatter(df, x, y, c= None, **kwargs):
+    """
+    Create scatter.
+    c: column of different classes to plot with different colors
+    """
+    data = []
+
+    if pd.isnull(c):
+        p = go.Scattergl(x = df[x],
+                         y = df[y],
+                         mode = 'markers',
+                         name = y)
+        data.append(p)
+    else:
+        for cc, sub_df in df.groupby(c):
+            p = go.Scattergl(x=sub_df[x],
+                             y=sub_df[y],
+                             mode='markers',
+                             name=cc)
+            data.append(p)
+
+    layout = go.Layout(**kwargs)
+    fig = go.Figure(data = data, layout = layout)
+    fig.update_layout(xaxis_title = x,
+                      yaxis_title = y)
+
     return fig

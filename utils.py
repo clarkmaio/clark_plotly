@@ -9,13 +9,26 @@ def plotly_decorator(func):
     """
     def wrapper(*args, **kwargs):
 
+        # Setup 'save' and 'filename' key
+        if not 'save' in kwargs:
+            save = False
+        else:
+            save = kwargs['save']
+            kwargs.pop('save')
+
+        if not 'filename' in kwargs:
+            filename = np.nan
+        else:
+            filename = kwargs['filename']
+            kwargs.pop('filename')
+
+
         fig = func(*args, **kwargs)
 
-        if 'save' in kwargs:
-            save = kwargs['save']
-            if save:
-                assert isinstance(kwargs['filename'], str)
-                plot(fig, auto_open=False, filename=kwargs['filename'])
+        if save:
+            assert isinstance(filename, str)
+            assert filename.endswith('.html')
+            plot(fig, auto_open=False, filename=filename)
 
         return fig
     return wrapper
